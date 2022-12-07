@@ -218,7 +218,7 @@ class ModelParser(SimpleSQLParser[ParsedModelNode]):
                     )
                 if num_args > 2:
                     raise ParsingException(
-                        f"dbt.config.get() takes at most  arguments ({num_args} given)",
+                        f"dbt.config.get() takes at most 2 arguments ({num_args} given)",
                         node=node,
                     )
                 key = args[0]
