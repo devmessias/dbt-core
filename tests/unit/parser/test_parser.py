@@ -1085,7 +1085,6 @@ class ModelParserTest(BaseParserTest):
             config_call_dict={
                 "materialized": "table",
                 "packages": python_packages,
-                "_dbt_node_type_configs": {"materialized": "table"},
             },
             refs=[
                 RefArgs(name="a_model"),
