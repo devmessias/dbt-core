@@ -92,8 +92,9 @@ class RenderedConfig(ConfigSource):
 
 
 class BaseContextConfigGenerator(Generic[T]):
-    def __init__(self, active_project: RuntimeConfig):
+    def __init__(self, active_project: RuntimeConfig, language: Optional[ModelLanguage] = None):
         self._active_project = active_project
+        self._language = language
 
     def get_config_source(self, project: Project) -> ConfigSource:
         return RenderedConfig(project)
@@ -184,15 +185,16 @@ class BaseContextConfigGenerator(Generic[T]):
 
 
 class ContextConfigGenerator(BaseContextConfigGenerator[C]):
-    def __init__(self, active_project: RuntimeConfig):
+    def __init__(self, active_project: RuntimeConfig, language: Optional[ModelLanguage] = None):
         self._active_project = active_project
+        self._language = language
 
     def get_config_source(self, project: Project) -> ConfigSource:
         return RenderedConfig(project)
 
     def initial_result(self, resource_type: NodeType, base: bool) -> C:
         # defaults, own_config, config calls, active_config (if != own_config)
-        config_cls = get_config_for(resource_type, base=base)
+        config_cls = get_config_for(resource_type, base=base, language=self._language)
         # Calculate the defaults. We don't want to validate the defaults,
         # because it might be invalid in the case of required config members
         # (such as on snapshots!)
@@ -306,6 +308,7 @@ class ContextConfig:
         *,
         rendered: bool = True,
         patch_config_dict: Optional[dict] = None,
+        language: Optional[ModelLanguage] = None,
     ) -> Dict[str, Any]:
         if rendered:
             # TODO CT-211
