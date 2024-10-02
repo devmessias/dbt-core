@@ -222,6 +222,7 @@ class ConfiguredParser(
             name = block.name
         if block.path.relative_path.endswith(".py"):
             language = ModelLanguage.python
+            config.add_config_call({"materialized": "table"})
         else:
             # this is not ideal but we have a lot of tests to adjust if don't do it
             language = ModelLanguage.sql
@@ -287,6 +288,7 @@ class ConfiguredParser(
     def update_parsed_node_relation_names(
         self, parsed_node: FinalNode, config_dict: Dict[str, Any]
     ) -> None:
+
         # These call the RelationUpdate callable to go through generate_name macros
         self._update_node_database(parsed_node, config_dict.get("database"))
         self._update_node_schema(parsed_node, config_dict.get("schema"))
@@ -320,9 +322,7 @@ class ConfiguredParser(
         # build_config_dict takes the config_call_dict in the ContextConfig object
         # and calls calculate_node_config to combine dbt_project configs and
         # config calls from SQL files, plus patch configs (from schema files)
-        config_dict = config.build_config_dict(
-            patch_config_dict=patch_config_dict, language=parsed_node.language
-        )
+        config_dict = config.build_config_dict(patch_config_dict=patch_config_dict)
 
         # Set tags on node provided in config blocks. Tags are additive, so even if
         # config has been built before, we don't have to reset tags in the parsed_node.

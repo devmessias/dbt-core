@@ -58,17 +58,9 @@ RESOURCE_TYPES: Dict[NodeType, Type[BaseConfig]] = {
 BASE_RESOURCE_TYPES: Dict[NodeType, Type[BaseConfig]] = RESOURCE_TYPES.copy()
 
 
-def get_config_for(
-    resource_type: NodeType, base=False, language: Optional[ModelLanguage] = None
-) -> Type[BaseConfig]:
+def get_config_for(resource_type: NodeType, base=False) -> Type[BaseConfig]:
     if base:
         lookup = BASE_RESOURCE_TYPES
     else:
         lookup = RESOURCE_TYPES
-
-    resource = lookup.get(resource_type, NodeConfig)
-
-    if language == "python" and (resource == NodeConfig):
-        resource = PythonNodeConfig
-
-    return resource
+    return lookup.get(resource_type, NodeConfig)

@@ -1082,10 +1082,7 @@ class ModelParserTest(BaseParserTest):
             raw_code=python_model,
             checksum=block.file.checksum,
             unrendered_config={"materialized": "table", "packages": python_packages},
-            config_call_dict={
-                "materialized": "table",
-                "packages": python_packages,
-            },
+            config_call_dict={"materialized": "table", "packages": python_packages},
             refs=[
                 RefArgs(name="a_model"),
                 RefArgs("my_sql_model"),
