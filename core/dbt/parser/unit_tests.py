@@ -100,19 +100,11 @@ class UnitTestManifestLoader:
 
         ctx = generate_parse_exposure(
             unit_test_node,  # type: ignore
-            self.root_project,
+            self.root_project,  # config
             self.manifest,
             test_case.package_name,
         )
 
-        # just to illustrate the issue in #..., but this change is obviously not
-        # the correct solution. I’ll wait for a discussion before writing any more
-        # advanced code.
-
-        if "var" not in ctx:
-            ctx["var"] = lambda var_name, default =None: default
-        if "env_var" not in ctx:
-            ctx["env_var"] = lambda var_name, default=None: default
         get_rendered(unit_test_node.raw_code, ctx, unit_test_node, capture_macros=True)
         # unit_test_node now has a populated refs/sources
 
