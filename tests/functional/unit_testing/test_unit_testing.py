@@ -291,6 +291,24 @@ class TestUnitTestIncrementalModelWithAlias:
         assert len(results) == 2
 
 
+class TestUnitTestIncrementalModelWithVersion:
+    @pytest.fixture(scope="class")
+    def models(self):
+        return {
+            "my_incremental_model.sql": my_incremental_model_sql,
+            "events.sql": event_sql,
+            "schema.yml": my_incremental_model_versioned_yml + test_my_model_incremental_yml_basic,
+        }
+
+    def test_basic(self, project):
+        results = run_dbt(["run"])
+        assert len(results) == 2
+
+        # Select by model name
+        results = run_dbt(["test", "--select", "my_incremental_model"], expect_pass=True)
+        assert len(results) == 2
+
+
 schema_ref_with_version = """
 models:
   - name: source
