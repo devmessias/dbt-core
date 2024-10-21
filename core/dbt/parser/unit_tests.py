@@ -167,7 +167,7 @@ class UnitTestManifestLoader:
                 if original_input_node.latest_version:
                     input_node.latest_version = original_input_node.latest_version
 
-            elif original_input_node.resource_type == NodeType.Source:
+            elif resource_type == NodeType.Source:
                 # We are reusing the database/schema/identifier from the original source,
                 # but that shouldn't matter since this acts as an ephemeral model which just
                 # wraps a CTE around the unit test node.
