@@ -309,7 +309,7 @@ class TestUnitTestIncrementalModelWithVersion:
         assert len(results) == 2
 
 
-schema_ref_with_version = """
+schema_ref_with_versioned_model = """
 models:
   - name: source
     latest_version: {latest_version}
@@ -338,7 +338,7 @@ class TestUnitTestRefWithVersion:
             "model_to_test.sql": "select result from {{ ref('source')}}",
             "source.sql": "select 2 as result",
             "source_v2.sql": "select 2 as result",
-            "schema.yml": schema_ref_with_version.format(
+            "schema.yml": schema_ref_with_versioned_model.format(
                 **{"latest_version": 1, "input": "ref('source')"}
             ),
         }
@@ -357,7 +357,7 @@ class TestUnitTestRefMissingVersionModel:
             "model_to_test.sql": "select result from {{ ref('source')}}",
             "source_v1.sql": "select 2 as result",
             "source_v2.sql": "select 2 as result",
-            "schema.yml": schema_ref_with_version.format(
+            "schema.yml": schema_ref_with_versioned_model.format(
                 **{"latest_version": 1, "input": "ref('source', v=1)"}
             ),
         }
@@ -376,7 +376,7 @@ class TestUnitTestRefWithMissingVersionRef:
             "model_to_test.sql": "select result from {{ ref('source', v=1)}}",
             "source_v1.sql": "select 2 as result",
             "source_v2.sql": "select 2 as result",
-            "schema.yml": schema_ref_with_version.format(
+            "schema.yml": schema_ref_with_versioned_model.format(
                 **{"latest_version": 1, "input": "ref('source')"}
             ),
         }
@@ -395,7 +395,7 @@ class TestUnitTestRefWithVersionLatestSecond:
             "model_to_test.sql": "select result from {{ ref('source')}}",
             "source_v1.sql": "select 2 as result",
             "source_v2.sql": "select 2 as result",
-            "schema.yml": schema_ref_with_version.format(
+            "schema.yml": schema_ref_with_versioned_model.format(
                 **{"latest_version": 2, "input": "ref('source')"}
             ),
         }
@@ -414,16 +414,21 @@ class TestUnitTestRefWithVersionMissingRefTest:
             "model_to_test.sql": "select result from {{ ref('source', v=2)}}",
             "source_v1.sql": "select 2 as result",
             "source_v2.sql": "select 2 as result",
-            "schema.yml": schema_ref_with_version.format(
+            "schema.yml": schema_ref_with_versioned_model.format(
                 **{"latest_version": 1, "input": "ref('source')"}
             ),
         }
 
     def test_basic(self, project):
         results = run_dbt(["run"])
+
         assert len(results) == 3
-        # TODO: How to capture an compilation Error? pytest.raises(CompilationError) not working
-        run_dbt(["test", "--select", "model_to_test"], expect_pass=False)
+        # run_dbt(["test", "--select", "model_to_test"], expect_pass=False)
+        exec_result, _ = run_dbt_and_capture(
+            ["test", "--select", "model_to_test"], expect_pass=False
+        )
+        msg_error = exec_result[0].message
+        assert msg_error.lower().lstrip().startswith("compilation error")
 
 
 class TestUnitTestRefWithVersionDiffLatest:
@@ -433,7 +438,7 @@ class TestUnitTestRefWithVersionDiffLatest:
             "model_to_test.sql": "select result from {{ ref('source', v=2)}}",
             "source_v1.sql": "select 2 as result",
             "source_v2.sql": "select 2 as result",
-            "schema.yml": schema_ref_with_version.format(
+            "schema.yml": schema_ref_with_versioned_model.format(
                 **{"latest_version": 1, "input": "ref('source', v=2)"}
             ),
         }
