@@ -160,12 +160,15 @@ class UnitTestManifestLoader:
                     defer_relation=original_input_node.defer_relation,
                 )
 
-                if not resource_type == NodeType.Model:
-                    continue
                 if original_input_node.version:
                     input_node.version = original_input_node.version
                 if original_input_node.latest_version:
                     input_node.latest_version = original_input_node.latest_version
+            elif resource_type in (NodeType.Seed, NodeType.Snapshot):
+                input_node = ModelNode(
+                    **common_fields,
+                    defer_relation=original_input_node.defer_relation,
+                )
 
             elif resource_type == NodeType.Source:
                 # We are reusing the database/schema/identifier from the original source,
